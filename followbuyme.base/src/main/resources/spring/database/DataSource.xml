@@ -1,0 +1,38 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/data/mongo 
+        http://www.springframework.org/schema/data/mongo/spring-mongo-1.5.xsd">
+	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>properties/database.properties</value>
+		</property>
+	</bean>
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+	
+	 <!-- mongo:db-factory id="mongoDbFactory" dbname="followbuymemongodb" host="localhost" port="27017" username="admin" password="admin" /> -->
+ <mongo:db-factory id="mongoDbFactory" dbname="followbuymemongodb" host="localhost" port="27017"/>
+ <mongo:mapping-converter id="converter" db-factory-ref="mongoDbFactory" />
+
+ <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+ 	<constructor-arg ref="mongoDbFactory"/>
+ 	<constructor-arg ref="converter"/>
+ </bean>
+ 
+ <bean id="gridFsTemplate" class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
+  <constructor-arg ref="mongoDbFactory" />
+  <constructor-arg ref="converter" />
+ </bean>
+	
+<bean id="fileStorageDao" class="com.followbuyme.building.mongodb.dao.FileStorageDaoImpl"/>
+
+</beans>
